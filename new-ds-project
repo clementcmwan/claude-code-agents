@@ -89,7 +89,7 @@ mamba run -n "$PROJECT_NAME" mamba install -y -q \
     black \
     flake8 \
     ipdb
-mamba run -n "$PROJECT_NAME" pip install -q autoflake
+mamba run -n "$PROJECT_NAME" pip install -q autoflake sqlfluff
 print_success "Dev tools installed"
 
 # 6. Install MLflow (via pip as it's not always in conda)
@@ -241,6 +241,7 @@ dependencies:
   - pip
   - pip:
       - mlflow
+      - sqlfluff
 EOF
 print_success "environment.yml created"
 
@@ -366,8 +367,11 @@ pytest tests/
 ### Code Formatting
 
 \`\`\`bash
-# Format code with black
+# Format Python code with black
 black src/ tests/
+
+# Format SQL files with sqlfluff
+sqlfluff fix --dialect postgres *.sql
 
 # Check code style with flake8
 flake8 src/ tests/
@@ -771,7 +775,7 @@ echo "   • NumPy, Pandas, Scikit-learn"
 echo "   • Matplotlib, Seaborn"
 echo "   • Jupyter Lab"
 echo "   • MLflow"
-echo "   • pytest, black, flake8"
+echo "   • pytest, black, flake8, sqlfluff"
 echo ""
 echo "📖 Next Steps:"
 echo "   1. Copy .env.example to .env and configure"

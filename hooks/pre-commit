@@ -15,6 +15,9 @@ echo ""
 # Get staged Python files
 STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$' || true)
 
+# Get staged SQL files
+STAGED_SQL=$(git diff --cached --name-only --diff-filter=ACM | grep -iE '\.(sql|ddl|dml)$' || true)
+
 # 1. Check diff size (encourage minimal changes)
 LINES_ADDED=$(git diff --cached --numstat | awk '{sum += $1} END {print sum+0}')
 LINES_REMOVED=$(git diff --cached --numstat | awk '{sum += $2} END {print sum+0}')
@@ -120,7 +123,39 @@ if [ -n "$STAGED_PY" ] && command -v black &> /dev/null; then
     fi
 fi
 
-# 8. Auto-fix unused imports/variables (if autoflake installed)
+# 8. SQL formatting (auto-fix with sqlfluff)
+if [ -n "$STAGED_SQL" ] && command -v sqlfluff &> /dev/null; then
+    echo "Formatting SQL (sqlfluff)..."
+    FORMATTED_SQL=""
+
+    # Use project .sqlfluff if exists, otherwise use .claude/.sqlfluff
+    SQLFLUFF_CONFIG=""
+    if [ -f ".sqlfluff" ]; then
+        SQLFLUFF_CONFIG=""
+    elif [ -f ".claude/.sqlfluff" ]; then
+        SQLFLUFF_CONFIG="--config .claude/.sqlfluff"
+    fi
+
+    for file in $STAGED_SQL; do
+        if [ -f "$file" ]; then
+            if ! sqlfluff lint $SQLFLUFF_CONFIG "$file" --quiet 2>/dev/null; then
+                sqlfluff fix $SQLFLUFF_CONFIG "$file" --quiet 2>/dev/null || true
+                git add "$file"
+                FORMATTED_SQL="$FORMATTED_SQL $file"
+            fi
+        fi
+    done
+
+    if [ -n "$FORMATTED_SQL" ]; then
+        echo -e "${GREEN}✓${NC} Auto-formatted SQL:$FORMATTED_SQL"
+    else
+        echo -e "${GREEN}✓${NC} SQL formatting already correct"
+    fi
+elif [ -n "$STAGED_SQL" ]; then
+    echo -e "${YELLOW}Note:${NC} sqlfluff not installed. Install with: pip install sqlfluff"
+fi
+
+# 9. Auto-fix unused imports/variables (if autoflake installed)
 if [ -n "$STAGED_PY" ] && command -v autoflake &> /dev/null; then
     echo "Removing unused imports (autoflake)..."
     for file in $STAGED_PY; do
@@ -132,7 +167,7 @@ if [ -n "$STAGED_PY" ] && command -v autoflake &> /dev/null; then
     echo -e "${GREEN}✓${NC} Unused imports/variables removed"
 fi
 
-# 9. Flake8 linting (warnings only - can't auto-fix all issues)
+# 10. Flake8 linting (warnings only - can't auto-fix all issues)
 if [ -n "$STAGED_PY" ] && command -v flake8 &> /dev/null; then
     echo "Checking linting (flake8)..."
     LINT_ERRORS=""

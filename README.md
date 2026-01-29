@@ -92,7 +92,7 @@ Packages installed:
 - **Core**: numpy, pandas, scikit-learn, matplotlib, seaborn
 - **Jupyter**: jupyter, jupyterlab
 - **Tracking**: MLflow
-- **Dev**: pytest, black, flake8, autoflake, ipdb
+- **Dev**: pytest, black, flake8, autoflake, ipdb, sqlfluff
 
 ### 4. Git Hooks
 
@@ -103,6 +103,7 @@ Auto-installed with `new-ds-project`. Ensures clean, validated, minimal commits.
 | Check | Action |
 |-------|--------|
 | **Black** | Auto-formats Python code |
+| **sqlfluff** | Auto-formats SQL files (.sql, .ddl, .dml) |
 | **Autoflake** | Removes unused imports/variables |
 | **Diff size** | Warns if >500 lines changed |
 | **Debug statements** | Blocks `breakpoint()`, `pdb`, `ipdb` |
@@ -124,7 +125,18 @@ Install in existing project:
 ~/claude-code-agents/hooks/install-hooks.sh
 ```
 
-### 5. Terminal Setup (tmux)
+**SQL Formatting**: Uses `.claude/.sqlfluff` config by default. Copy to project root to customize:
+```bash
+cp .claude/.sqlfluff .sqlfluff
+```
+
+### 5. Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/format-sql` | Format SQL queries using project style guide |
+
+### 6. Terminal Setup (tmux)
 
 Replicate the terminal environment:
 

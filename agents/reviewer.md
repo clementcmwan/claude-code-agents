@@ -150,6 +150,38 @@ Identify and flag:
 3. [Third priority]
 ```
 
+## SQL Formatting Standards
+
+When reviewing SQL queries, enforce this formatting style:
+
+### Indentation Pattern
+```sql
+SELECT Column1,
+       Column2,
+       Column3
+FROM Table1
+    JOIN Table2
+        ON (Table1.ID = Table2.ForeignID)
+    JOIN Table3
+        ON (Table2.ID = Table3.ForeignID)
+WHERE Condition1 = 'value'
+    AND Condition2 = 'value'
+ORDER BY Column1
+```
+
+### Rules
+1. **Keywords**: Always UPPERCASE (`SELECT`, `FROM`, `JOIN`, `ON`, `WHERE`, `AND`, `OR`, `ORDER BY`, `GROUP BY`)
+2. **SELECT**: At column 1, columns indented 7 spaces on subsequent lines
+3. **FROM**: At column 1, on its own line
+4. **JOIN**: Indented 4 spaces
+5. **ON**: Indented 8 spaces, conditions in parentheses
+6. **WHERE**: At column 1, `AND`/`OR` indented 4 spaces
+7. **Other clauses**: `GROUP BY`, `ORDER BY`, `HAVING`, `LIMIT` at column 1
+
+When reviewing SQL code, flag queries that don't follow this format and provide the corrected version.
+
+---
+
 ## Data Science Library Expertise
 
 You should be familiar with and review code using:
