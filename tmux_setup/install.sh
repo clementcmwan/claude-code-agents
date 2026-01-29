@@ -44,12 +44,12 @@ echo "Backing up existing configs..."
 [ -f ~/.p10k.zsh ] && cp ~/.p10k.zsh ~/.p10k.zsh.backup.$(date +%Y%m%d)
 echo -e "${GREEN}✓${NC} Backups created"
 
-# 4. Copy config files
-echo "Installing config files..."
-cp "$SCRIPT_DIR/tmux.conf" ~/.tmux.conf
-cp "$SCRIPT_DIR/zshrc" ~/.zshrc
-cp "$SCRIPT_DIR/p10k.zsh" ~/.p10k.zsh
-echo -e "${GREEN}✓${NC} Config files installed"
+# 4. Symlink config files (so updates to repo reflect locally)
+echo "Symlinking config files..."
+ln -sf "$SCRIPT_DIR/tmux.conf" ~/.tmux.conf
+ln -sf "$SCRIPT_DIR/zshrc" ~/.zshrc
+ln -sf "$SCRIPT_DIR/p10k.zsh" ~/.p10k.zsh
+echo -e "${GREEN}✓${NC} Config files symlinked"
 
 # 5. Install Nerd Font (required for icons)
 echo ""
@@ -73,10 +73,10 @@ echo "  - zsh-syntax-highlighting"
 echo "  - eza (better ls)"
 echo "  - zoxide (better cd)"
 echo ""
-echo "Config files:"
-echo "  ~/.tmux.conf"
-echo "  ~/.zshrc"
-echo "  ~/.p10k.zsh"
+echo "Config files (symlinked - updates to repo reflect automatically):"
+echo "  ~/.tmux.conf  → $SCRIPT_DIR/tmux.conf"
+echo "  ~/.zshrc      → $SCRIPT_DIR/zshrc"
+echo "  ~/.p10k.zsh   → $SCRIPT_DIR/p10k.zsh"
 echo ""
 echo "Next steps:"
 echo "  1. Restart your terminal or run: source ~/.zshrc"
