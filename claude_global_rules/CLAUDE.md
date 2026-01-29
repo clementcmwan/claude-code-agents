@@ -29,6 +29,10 @@
 
 ## 5. Git
 
+- **Never commit without permission.** Before any `git commit`:
+  1. List files changed
+  2. Summarize what changed and why (1-2 sentences)
+  3. Ask: "Ready to commit?"
 - Write concise commit messages (50 chars title, imperative mood).
 - Never commit secrets, credentials, or .env files.
 - Prefer small, focused commits over large ones.
