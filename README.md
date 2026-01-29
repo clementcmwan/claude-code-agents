@@ -1,10 +1,8 @@
-# Claude Code Agents
+# Data Science Dev Environment
 
-Custom agents for data science workflows in Claude Code.
+A complete development environment setup for data science workflows, including Claude Code configuration, project scaffolding, code quality hooks, and terminal setup.
 
-## How to Use
-
-Clone once to a permanent location, then use everywhere:
+## Quick Start
 
 ```bash
 # 1. Clone to home directory
@@ -15,8 +13,7 @@ cd ~/claude-code-agents
 ./install.sh
 
 # 3. (Optional) Install terminal setup
-cd ~/claude-code-agents/tmux_setup
-./install.sh
+./tmux_setup/install.sh
 ```
 
 This creates symlinks so everything works globally:
@@ -27,9 +24,19 @@ This creates symlinks so everything works globally:
 | Global rules | ~/.claude/CLAUDE.md | Claude follows rules in all projects |
 | Agents | ~/.claude/agents/ | Agents available in all projects |
 
-Now in **any project**, Claude Code automatically uses your agents and rules.
+### Prerequisites
 
-## Agents
+- [Miniforge/Mamba](https://github.com/conda-forge/miniforge)
+- (Optional) GitHub CLI: `brew install gh && gh auth login`
+- (Optional) Nerd Font for terminal icons
+
+---
+
+## What's Included
+
+### 1. Claude Code Agents
+
+Custom agents for data science workflows:
 
 | Agent | Purpose | Access |
 |-------|---------|--------|
@@ -39,17 +46,23 @@ Now in **any project**, Claude Code automatically uses your agents and rules.
 | **Tester** | Runtime validation | Read-only + bash |
 | **Logger** | Logging & MLflow instrumentation | Full |
 
-## new-ds-project
+### 2. Global Claude Rules
 
-One-command data science project setup.
+Behavioral rules that apply across all projects (`claude_global_rules/CLAUDE.md`):
 
-### Usage
+| Rule | Description |
+|------|-------------|
+| **Think First** | Ask when uncertain, present options |
+| **Simplicity** | No extra features, minimal code |
+| **Surgical** | Only change what's needed, match style |
+| **Code Quality** | Type hints, logging, f-strings |
+| **Git Commit** | Always ask permission before committing |
+| **Git Push** | Always summarize and ask permission before pushing |
+| **Safety** | Confirm before deleting/overwriting |
 
-```bash
-new-ds-project <project-name> [python-version]
-```
+### 3. Project Scaffolding (new-ds-project)
 
-### Example
+One-command data science project setup:
 
 ```bash
 new-ds-project my-ml-project 3.11
@@ -58,8 +71,7 @@ mamba activate my-ml-project
 jupyter lab
 ```
 
-### What It Creates
-
+Creates:
 ```
 project/
 ├── data/{raw,processed,external}/
@@ -76,22 +88,17 @@ project/
 └── README.md
 ```
 
-### Packages Installed
-
+Packages installed:
 - **Core**: numpy, pandas, scikit-learn, matplotlib, seaborn
 - **Jupyter**: jupyter, jupyterlab
 - **Tracking**: MLflow
 - **Dev**: pytest, black, flake8, autoflake, ipdb
 
-### Requirements
+### 4. Git Hooks
 
-- [Miniforge/Mamba](https://github.com/conda-forge/miniforge) installed
+Auto-installed with `new-ds-project`. Ensures clean, validated, minimal commits.
 
-## Git Hooks
-
-Git hooks are auto-installed with `new-ds-project`. They ensure clean, validated, minimal commits.
-
-### pre-commit (auto-fixes code)
+**pre-commit (auto-fixes code):**
 
 | Check | Action |
 |-------|--------|
@@ -105,46 +112,21 @@ Git hooks are auto-installed with `new-ds-project`. They ensure clean, validated
 | **Python syntax** | Validates .py files |
 | **Flake8** | Warns on remaining lint issues |
 
-### pre-push (validates before push)
+**pre-push (validates before push):**
 
 | Check | Action |
 |-------|--------|
 | **Pytest** | Runs tests, blocks if failing |
 | **Branch** | Warns when pushing to main/master |
 
-### Install in Existing Project
-
+Install in existing project:
 ```bash
-cd your-project
-/path/to/claude-code-agents/hooks/install-hooks.sh
+~/claude-code-agents/hooks/install-hooks.sh
 ```
 
-## Global Claude Rules
+### 5. Terminal Setup (tmux)
 
-Behavioral rules that apply to Claude across all projects. Located in `claude_global_rules/CLAUDE.md`.
-
-| Rule | Description |
-|------|-------------|
-| **Think First** | Ask when uncertain, present options |
-| **Simplicity** | No extra features, minimal code |
-| **Surgical** | Only change what's needed, match style |
-| **Code Quality** | Type hints, logging, f-strings |
-| **Git Commit** | Always ask permission before committing |
-| **Git Push** | Always summarize and ask permission before pushing |
-| **Safety** | Confirm before deleting/overwriting |
-
-### Install Global Rules
-
-```bash
-# Symlink to make rules global
-ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUDE.md
-```
-
-## Terminal Setup (tmux)
-
-Replicate the terminal environment with tmux, zsh, and powerlevel10k.
-
-### What's Included
+Replicate the terminal environment:
 
 - **tmux** - Terminal multiplexer with custom keybindings
 - **powerlevel10k** - Fast zsh theme with icons
@@ -153,14 +135,12 @@ Replicate the terminal environment with tmux, zsh, and powerlevel10k.
 - **eza** - Better `ls` with icons
 - **zoxide** - Smarter `cd`
 
-### Install Terminal Setup
-
+Install:
 ```bash
-cd claude-code-agents/tmux_setup
-./install.sh
+./tmux_setup/install.sh
 ```
 
-### Tmux Keybindings
+**Tmux Keybindings** (Prefix = `Ctrl+b`):
 
 | Key | Action |
 |-----|--------|
@@ -168,27 +148,3 @@ cd claude-code-agents/tmux_setup
 | `Prefix + -` | Split vertical |
 | `Prefix + j/k/i/l` | Navigate panes |
 | `Prefix + r` | Reload config |
-
-(Prefix = `Ctrl+b`)
-
-## Installation
-
-```bash
-# Clone the repo
-git clone https://github.com/clementcmwan/claude-code-agents.git
-cd claude-code-agents
-
-# Run the install script
-./install.sh
-```
-
-This sets up:
-- `new-ds-project` command (symlinked to ~/bin/)
-- Global Claude rules (symlinked to ~/.claude/)
-- Agents (symlinked to ~/.claude/agents/)
-
-### Prerequisites
-
-- [Miniforge/Mamba](https://github.com/conda-forge/miniforge)
-- (Optional) GitHub CLI: `brew install gh && gh auth login`
-- (Optional) Nerd Font for terminal icons
