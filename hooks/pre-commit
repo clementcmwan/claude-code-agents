@@ -99,35 +99,46 @@ if [ -n "$STAGED_PY" ]; then
     echo -e "${GREEN}✓${NC} Python syntax valid"
 fi
 
-# 7. Black formatting check (if installed)
+# 7. Black formatting (auto-fix)
 if [ -n "$STAGED_PY" ] && command -v black &> /dev/null; then
-    echo "Checking formatting (black)..."
-    UNFORMATTED=""
+    echo "Formatting code (black)..."
+    FORMATTED=""
     for file in $STAGED_PY; do
         if [ -f "$file" ]; then
             if ! black --check --quiet "$file" 2>/dev/null; then
-                UNFORMATTED="$UNFORMATTED $file"
+                black --quiet "$file"
+                git add "$file"
+                FORMATTED="$FORMATTED $file"
             fi
         fi
     done
 
-    if [ -n "$UNFORMATTED" ]; then
-        echo -e "${RED}Error:${NC} Files need formatting:"
-        echo "$UNFORMATTED" | tr ' ' '\n' | grep -v '^$'
-        echo ""
-        echo "Run: black$UNFORMATTED"
-        exit 1
+    if [ -n "$FORMATTED" ]; then
+        echo -e "${GREEN}✓${NC} Auto-formatted:$FORMATTED"
+    else
+        echo -e "${GREEN}✓${NC} Formatting already correct"
     fi
-    echo -e "${GREEN}✓${NC} Formatting correct"
 fi
 
-# 8. Flake8 linting (if installed)
+# 8. Auto-fix unused imports/variables (if autoflake installed)
+if [ -n "$STAGED_PY" ] && command -v autoflake &> /dev/null; then
+    echo "Removing unused imports (autoflake)..."
+    for file in $STAGED_PY; do
+        if [ -f "$file" ]; then
+            autoflake --in-place --remove-all-unused-imports --remove-unused-variables "$file"
+            git add "$file"
+        fi
+    done
+    echo -e "${GREEN}✓${NC} Unused imports/variables removed"
+fi
+
+# 9. Flake8 linting (warnings only - can't auto-fix all issues)
 if [ -n "$STAGED_PY" ] && command -v flake8 &> /dev/null; then
     echo "Checking linting (flake8)..."
     LINT_ERRORS=""
     for file in $STAGED_PY; do
         if [ -f "$file" ]; then
-            ERRORS=$(flake8 --max-line-length=100 --ignore=E501,W503 "$file" 2>/dev/null || true)
+            ERRORS=$(flake8 --max-line-length=100 --ignore=E501,W503,F401,F841 "$file" 2>/dev/null || true)
             if [ -n "$ERRORS" ]; then
                 LINT_ERRORS="$LINT_ERRORS$ERRORS\n"
             fi
@@ -135,7 +146,7 @@ if [ -n "$STAGED_PY" ] && command -v flake8 &> /dev/null; then
     done
 
     if [ -n "$LINT_ERRORS" ]; then
-        echo -e "${YELLOW}Warning:${NC} Linting issues found:"
+        echo -e "${YELLOW}Warning:${NC} Linting issues (manual fix needed):"
         echo -e "$LINT_ERRORS"
     else
         echo -e "${GREEN}✓${NC} Linting passed"

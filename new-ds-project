@@ -89,6 +89,7 @@ mamba run -n "$PROJECT_NAME" mamba install -y -q \
     black \
     flake8 \
     ipdb
+mamba run -n "$PROJECT_NAME" pip install -q autoflake
 print_success "Dev tools installed"
 
 # 6. Install MLflow (via pip as it's not always in conda)
