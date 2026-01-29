@@ -1,0 +1,46 @@
+#!/bin/bash
+# post-merge hook - Suggest cleanup of stale mamba environments after merge
+#
+# This hook runs after a successful git merge (including git pull).
+# It checks for orphaned mamba environments and prompts for cleanup.
+
+# Colors
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Only run in interactive terminals
+if [ ! -t 1 ]; then
+    exit 0
+fi
+
+# Check if cleanup-ds-env is available
+CLEANUP_SCRIPT="$(dirname "$(dirname "$(readlink -f "$0")")")/../.claude/cleanup-ds-env"
+if [ ! -x "$CLEANUP_SCRIPT" ]; then
+    # Try finding it in common locations
+    for path in \
+        "$HOME/.claude/cleanup-ds-env" \
+        "/usr/local/bin/cleanup-ds-env" \
+        "$(which cleanup-ds-env 2>/dev/null)"; do
+        if [ -x "$path" ]; then
+            CLEANUP_SCRIPT="$path"
+            break
+        fi
+    done
+fi
+
+if [ ! -x "$CLEANUP_SCRIPT" ]; then
+    exit 0
+fi
+
+# Run dry-run to check for stale environments
+STALE_OUTPUT=$("$CLEANUP_SCRIPT" --dry-run 2>&1)
+
+if echo "$STALE_OUTPUT" | grep -q "Found orphaned environments"; then
+    echo ""
+    echo -e "${YELLOW}⚠${NC}  Stale mamba environments detected"
+    echo -e "${BLUE}==>${NC} Run 'cleanup-ds-env' to review and remove them"
+    echo ""
+fi
+
+exit 0

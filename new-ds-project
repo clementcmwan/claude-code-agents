@@ -725,7 +725,8 @@ if [ -d "$HOOKS_DIR" ]; then
     cp "$HOOKS_DIR/pre-commit" .git/hooks/pre-commit 2>/dev/null && chmod +x .git/hooks/pre-commit
     cp "$HOOKS_DIR/commit-msg" .git/hooks/commit-msg 2>/dev/null && chmod +x .git/hooks/commit-msg
     cp "$HOOKS_DIR/pre-push" .git/hooks/pre-push 2>/dev/null && chmod +x .git/hooks/pre-push
-    print_success "Git hooks installed (pre-commit, commit-msg, pre-push)"
+    cp "$HOOKS_DIR/post-merge" .git/hooks/post-merge 2>/dev/null && chmod +x .git/hooks/post-merge
+    print_success "Git hooks installed (pre-commit, commit-msg, pre-push, post-merge)"
 fi
 
 # 17. Register Jupyter kernel

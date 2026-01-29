@@ -1,0 +1,233 @@
+#!/bin/bash
+# cleanup-ds-env - Remove mamba environments for deleted/merged branches
+# Usage: cleanup-ds-env [--dry-run] [--force] [--project-prefix PREFIX] [--all]
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Defaults
+DRY_RUN=false
+FORCE=false
+PROJECT_PREFIX=""
+ALL_ENVS=false
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --dry-run|-n)
+            DRY_RUN=true
+            shift
+            ;;
+        --force|-f)
+            FORCE=true
+            shift
+            ;;
+        --project-prefix|-p)
+            PROJECT_PREFIX="$2"
+            shift 2
+            ;;
+        --all|-a)
+            ALL_ENVS=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: cleanup-ds-env [OPTIONS]"
+            echo ""
+            echo "Remove mamba environments that no longer have matching git branches."
+            echo ""
+            echo "By default, only considers environments matching the current project"
+            echo "(detected from environment.yml or git remote name)."
+            echo ""
+            echo "Options:"
+            echo "  -n, --dry-run           Show what would be removed without removing"
+            echo "  -f, --force             Remove without confirmation"
+            echo "  -p, --project-prefix    Only consider envs starting with PREFIX"
+            echo "  -a, --all               Consider ALL environments (not just current project)"
+            echo "  -h, --help              Show this help message"
+            echo ""
+            echo "Examples:"
+            echo "  cleanup-ds-env --dry-run        # Preview cleanup for current project"
+            echo "  cleanup-ds-env --force          # Remove stale envs without confirmation"
+            echo "  cleanup-ds-env -p my-project    # Only clean my-project-* envs"
+            echo "  cleanup-ds-env --all            # Check all envs against all branches"
+            exit 0
+            ;;
+        *)
+            echo -e "${RED}Unknown option: $1${NC}"
+            exit 1
+            ;;
+    esac
+done
+
+print_info() {
+    echo -e "${BLUE}==>${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}✓${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}✗${NC} $1"
+}
+
+# Check if we're in a git repository
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    print_error "Not in a git repository"
+    exit 1
+fi
+
+# Auto-detect project prefix if not specified and not --all
+if [ -z "$PROJECT_PREFIX" ] && [ "$ALL_ENVS" != true ]; then
+    # Try to get project name from environment.yml
+    if [ -f "environment.yml" ]; then
+        PROJECT_PREFIX=$(grep -E "^name:" environment.yml | head -1 | sed 's/name:[[:space:]]*//' | tr -d '\r')
+    fi
+
+    # Fallback: try to get from git remote name
+    if [ -z "$PROJECT_PREFIX" ]; then
+        REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+        if [ -n "$REMOTE_URL" ]; then
+            PROJECT_PREFIX=$(basename -s .git "$REMOTE_URL")
+        fi
+    fi
+
+    # Fallback: use current directory name
+    if [ -z "$PROJECT_PREFIX" ]; then
+        PROJECT_PREFIX=$(basename "$(pwd)")
+    fi
+
+    print_info "Auto-detected project: $PROJECT_PREFIX"
+fi
+
+# Get all mamba environments
+print_info "Scanning mamba environments..."
+MAMBA_ENVS=$(mamba env list --json 2>/dev/null | python3 -c "
+import json, sys, os
+data = json.load(sys.stdin)
+for env_path in data.get('envs', []):
+    name = os.path.basename(env_path)
+    if name != 'base':
+        print(name)
+" 2>/dev/null || echo "")
+
+if [ -z "$MAMBA_ENVS" ]; then
+    print_info "No mamba environments found (other than base)"
+    exit 0
+fi
+
+# Get all git branches (local and remote)
+print_info "Scanning git branches..."
+git fetch --prune > /dev/null 2>&1 || true
+
+LOCAL_BRANCHES=$(git branch --format='%(refname:short)' 2>/dev/null || echo "")
+REMOTE_BRANCHES=$(git branch -r --format='%(refname:short)' 2>/dev/null | sed 's|origin/||' || echo "")
+ALL_BRANCHES=$(echo -e "$LOCAL_BRANCHES\n$REMOTE_BRANCHES" | sort -u | grep -v '^$' || echo "")
+
+# Protected environment names (never delete these)
+PROTECTED_ENVS="base python"
+
+# Find orphaned environments
+ORPHANED_ENVS=""
+for env in $MAMBA_ENVS; do
+    # Skip if prefix filter is set and env doesn't match
+    if [ -n "$PROJECT_PREFIX" ] && [[ ! "$env" == "$PROJECT_PREFIX"* ]]; then
+        continue
+    fi
+
+    # Skip protected envs
+    if echo "$PROTECTED_ENVS" | grep -qw "$env"; then
+        continue
+    fi
+
+    # Skip the base project env (corresponds to main/master branch)
+    if [ -n "$PROJECT_PREFIX" ] && [ "$env" = "$PROJECT_PREFIX" ]; then
+        # Only keep if main or master branch exists
+        if echo "$ALL_BRANCHES" | grep -qE "^(main|master)$"; then
+            continue
+        fi
+    fi
+
+    # For project-prefixed envs (e.g., my-project-feature-xyz), extract branch name
+    if [ -n "$PROJECT_PREFIX" ] && [[ "$env" == "$PROJECT_PREFIX-"* ]]; then
+        # Extract the branch portion after the prefix
+        BRANCH_PORTION="${env#$PROJECT_PREFIX-}"
+        if echo "$ALL_BRANCHES" | grep -qx "$BRANCH_PORTION"; then
+            continue
+        fi
+    fi
+
+    # Check if env has a matching branch (exact match)
+    if echo "$ALL_BRANCHES" | grep -qx "$env"; then
+        continue
+    fi
+
+    ORPHANED_ENVS="$ORPHANED_ENVS $env"
+done
+
+# Trim whitespace
+ORPHANED_ENVS=$(echo "$ORPHANED_ENVS" | xargs)
+
+if [ -z "$ORPHANED_ENVS" ]; then
+    print_success "No orphaned environments found"
+    exit 0
+fi
+
+# Display orphaned environments
+echo ""
+print_warning "Found orphaned environments (no matching branch):"
+echo ""
+for env in $ORPHANED_ENVS; do
+    echo "  • $env"
+done
+echo ""
+
+# Dry run - just show what would be removed
+if [ "$DRY_RUN" = true ]; then
+    print_info "Dry run - no environments were removed"
+    echo ""
+    echo "Run without --dry-run to remove these environments"
+    exit 0
+fi
+
+# Confirm removal
+if [ "$FORCE" != true ]; then
+    echo -n "Remove these environments? [y/N] "
+    read -r response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        print_info "Aborted"
+        exit 0
+    fi
+fi
+
+# Remove orphaned environments
+echo ""
+for env in $ORPHANED_ENVS; do
+    print_info "Removing environment: $env"
+
+    # Remove Jupyter kernel if it exists
+    if jupyter kernelspec list 2>/dev/null | grep -q "^  $env "; then
+        jupyter kernelspec uninstall "$env" -y > /dev/null 2>&1 || true
+        print_success "Removed Jupyter kernel: $env"
+    fi
+
+    # Remove mamba environment
+    if mamba env remove -n "$env" -y > /dev/null 2>&1; then
+        print_success "Removed environment: $env"
+    else
+        print_error "Failed to remove environment: $env"
+    fi
+done
+
+echo ""
+print_success "Cleanup complete"
