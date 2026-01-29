@@ -1,0 +1,101 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+##### env variables
+# mlflow tracking uri
+# export MLFLOW_TRACKING_URI="http://52.90.4.4:5000/"
+
+
+# making hdf5@1.8 first in the path
+#export PATH="/opt/homebrew/opt/hdf5@1.8/bin:$PATH"
+
+# For compilers to find hdf5@1.8
+#export LDFLAGS="-L/opt/homebrew/opt/hdf5@1.8/lib"
+#export CPPFLAGS="-I/opt/homebrew/opt/hdf5@1.8/include"
+
+# https://github.com/h5py/h5py/issues/2035
+#export HDF5_DIR=/usr/local/opt/hdf@1.8/ 
+
+# API Keys (set in .env or export manually - never commit!)
+#export GPT_TOKEN=your_openai_api_key_here
+#export BOT_TOKEN=your_bot_token_here
+
+
+##### aliases
+# zsh aliases
+alias edit-zsh="nano ~/.zshrc"
+alias src-zsh="source ~/.zshrc"
+
+# docker aliases
+alias dkr-rm-exited-containers="docker rm $(docker ps -a -q -f status=exited)"
+alias dkr-stop-all-running-containers="docker stop $(docker ps -q)"
+
+
+# ---- Eza (better ls) -----
+alias ls="eza --icons=always"
+
+# ---- Zoxide (better cd) ----
+eval "$(zoxide init zsh)"
+alias cd="z"
+
+
+# path for local zsh scripts
+export PATH="$HOME/.local/bin:$PATH"
+
+export PATH="/opt/homebrew/opt/hdf5@1.8/bin:$PATH"
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+
+
+# completion using arrow keys (based on history)
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+
+
+# history setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=1000
+HISTSIZE=999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH="$HOME/bin:$PATH"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniforge/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniforge/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba shell init' !!
+export MAMBA_EXE='/opt/homebrew/bin/mamba';
+export MAMBA_ROOT_PREFIX='/opt/homebrew/Caskroom/miniforge/base';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias mamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<
