@@ -113,6 +113,37 @@ Behavioral rules that apply to Claude across all projects. Located in `claude_gl
 ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
+## Terminal Setup (tmux)
+
+Replicate the terminal environment with tmux, zsh, and powerlevel10k.
+
+### What's Included
+
+- **tmux** - Terminal multiplexer with custom keybindings
+- **powerlevel10k** - Fast zsh theme with icons
+- **zsh-autosuggestions** - Fish-like suggestions
+- **zsh-syntax-highlighting** - Command highlighting
+- **eza** - Better `ls` with icons
+- **zoxide** - Smarter `cd`
+
+### Install Terminal Setup
+
+```bash
+cd claude-code-agents/tmux_setup
+./install.sh
+```
+
+### Tmux Keybindings
+
+| Key | Action |
+|-----|--------|
+| `Prefix + \|` | Split horizontal |
+| `Prefix + -` | Split vertical |
+| `Prefix + j/k/i/l` | Navigate panes |
+| `Prefix + r` | Reload config |
+
+(Prefix = `Ctrl+b`)
+
 ## Installation
 
 ```bash
@@ -133,3 +164,4 @@ This sets up:
 
 - [Miniforge/Mamba](https://github.com/conda-forge/miniforge)
 - (Optional) GitHub CLI: `brew install gh && gh auth login`
+- (Optional) Nerd Font for terminal icons
