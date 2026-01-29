@@ -2,6 +2,33 @@
 
 Custom agents for data science workflows in Claude Code.
 
+## How to Use
+
+Clone once to a permanent location, then use everywhere:
+
+```bash
+# 1. Clone to home directory
+git clone https://github.com/clementcmwan/claude-code-agents.git ~/claude-code-agents
+
+# 2. Run install script
+cd ~/claude-code-agents
+./install.sh
+
+# 3. (Optional) Install terminal setup
+cd ~/claude-code-agents/tmux_setup
+./install.sh
+```
+
+This creates symlinks so everything works globally:
+
+| What | Location | Effect |
+|------|----------|--------|
+| `new-ds-project` | ~/bin/ | Create DS projects from anywhere |
+| Global rules | ~/.claude/CLAUDE.md | Claude follows rules in all projects |
+| Agents | ~/.claude/agents/ | Agents available in all projects |
+
+Now in **any project**, Claude Code automatically uses your agents and rules.
+
 ## Agents
 
 | Agent | Purpose | Access |
