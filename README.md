@@ -118,10 +118,18 @@ ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUD
 ```bash
 # Clone the repo
 git clone https://github.com/clementcmwan/claude-code-agents.git
+cd claude-code-agents
 
-# Symlink the script to your PATH
-ln -sf /path/to/claude-code-agents/new-ds-project ~/bin/new-ds-project
-
-# Symlink global rules
-ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUDE.md
+# Run the install script
+./install.sh
 ```
+
+This sets up:
+- `new-ds-project` command (symlinked to ~/bin/)
+- Global Claude rules (symlinked to ~/.claude/)
+- Agents (symlinked to ~/.claude/agents/)
+
+### Prerequisites
+
+- [Miniforge/Mamba](https://github.com/conda-forge/miniforge)
+- (Optional) GitHub CLI: `brew install gh && gh auth login`
