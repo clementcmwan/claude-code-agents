@@ -92,6 +92,27 @@ cd your-project
 /path/to/claude-code-agents/hooks/install-hooks.sh
 ```
 
+## Global Claude Rules
+
+Behavioral rules that apply to Claude across all projects. Located in `claude_global_rules/CLAUDE.md`.
+
+| Rule | Description |
+|------|-------------|
+| **Think First** | Ask when uncertain, present options |
+| **Simplicity** | No extra features, minimal code |
+| **Surgical** | Only change what's needed, match style |
+| **Code Quality** | Type hints, logging, f-strings |
+| **Git Commit** | Always ask permission before committing |
+| **Git Push** | Always summarize and ask permission before pushing |
+| **Safety** | Confirm before deleting/overwriting |
+
+### Install Global Rules
+
+```bash
+# Symlink to make rules global
+ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUDE.md
+```
+
 ## Installation
 
 ```bash
@@ -100,4 +121,7 @@ git clone https://github.com/clementcmwan/claude-code-agents.git
 
 # Symlink the script to your PATH
 ln -sf /path/to/claude-code-agents/new-ds-project ~/bin/new-ds-project
+
+# Symlink global rules
+ln -sf /path/to/claude-code-agents/claude_global_rules/CLAUDE.md ~/.claude/CLAUDE.md
 ```
