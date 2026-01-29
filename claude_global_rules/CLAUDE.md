@@ -38,6 +38,7 @@
   2. Summarize what's being pushed
   3. Ask: "Ready to push?"
 - Write concise commit messages (50 chars title, imperative mood).
+- Do NOT include "Co-Authored-By" lines in commit messages.
 - Never commit secrets, credentials, or .env files.
 - Prefer small, focused commits over large ones.
 
