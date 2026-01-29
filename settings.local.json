@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(opencode)",
+      "Bash(echo:*)",
+      "Bash(opencode --help:*)",
+      "Bash(opencode agent list:*)",
+      "Bash(opencode agent:*)",
+      "Bash(ulimit:*)",
+      "Bash(opencode --version:*)",
+      "Bash(brew info:*)",
+      "Bash(brew update:*)",
+      "Bash(brew upgrade:*)",
+      "Bash(gtimeout:*)",
+      "Bash(sort:*)",
+      "Bash(gh auth:*)",
+      "Bash(git -C /Users/clement/Desktop/tmux_opencode_setup/.claude status)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(brew install:*)",
+      "Bash(git -C /Users/clement/Desktop/tmux_opencode_setup/.claude init)",
+      "Bash(git -C /Users/clement/Desktop/tmux_opencode_setup/.claude add .)",
+      "Bash(git -C /Users/clement/Desktop/tmux_opencode_setup/.claude commit -m \"Initial commit: Claude Code agents setup\n\nIncludes:\n- Main-Agent: Primary coordinator\n- Master-Planner: Planning & requirements \\(read-only\\)\n- Reviewer: Static code analysis\n- Tester: Runtime validation\n- Logger: Logging & MLflow instrumentation\n- CLAUDE.md: Behavioral guidelines\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\")"
+    ]
+  }
+}
