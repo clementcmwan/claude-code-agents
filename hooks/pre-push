@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pre-push hook: Run tests before pushing
+# Pre-push hook: Validate commits and run tests before pushing
 # Install: cp hooks/pre-push .git/hooks/ && chmod +x .git/hooks/pre-push
 
 set -e
@@ -7,9 +7,65 @@ set -e
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo "Running pre-push checks..."
+echo ""
+
+# 0. Validate all commit messages follow Conventional Commits
+echo "Validating commit messages..."
+
+# Read stdin to get the ref being pushed
+while read local_ref local_sha remote_ref remote_sha; do
+    # Skip delete operations
+    if [ "$local_sha" = "0000000000000000000000000000000000000000" ]; then
+        continue
+    fi
+
+    # Determine range of commits to check
+    if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+        # New branch - check all commits
+        COMMITS=$(git rev-list "$local_sha" --not --remotes=origin 2>/dev/null || echo "$local_sha")
+    else
+        # Existing branch - check new commits only
+        COMMITS=$(git rev-list "$remote_sha..$local_sha" 2>/dev/null || true)
+    fi
+
+    if [ -z "$COMMITS" ]; then
+        continue
+    fi
+
+    # Conventional Commits pattern
+    PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_-]+\))?(!)?: .{1,}"
+
+    INVALID_COMMITS=""
+    for commit in $COMMITS; do
+        MSG=$(git log --format=%s -n 1 "$commit")
+
+        # Skip merge commits
+        if echo "$MSG" | grep -qE "^Merge "; then
+            continue
+        fi
+
+        if ! echo "$MSG" | grep -qE "$PATTERN"; then
+            INVALID_COMMITS="$INVALID_COMMITS\n  ${YELLOW}$commit${NC}: $MSG"
+        fi
+    done
+
+    if [ -n "$INVALID_COMMITS" ]; then
+        echo -e "${RED}Error:${NC} The following commits do not follow Conventional Commits format:"
+        echo -e "$INVALID_COMMITS"
+        echo ""
+        echo -e "${CYAN}Expected format:${NC} <type>[scope]: <description>"
+        echo -e "${CYAN}Valid types:${NC} feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert"
+        echo ""
+        echo "Please amend or rebase to fix commit messages before pushing."
+        exit 1
+    fi
+done
+
+echo -e "${GREEN}✓${NC} All commit messages follow Conventional Commits format"
 echo ""
 
 # 1. Check if tests directory exists

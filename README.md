@@ -113,10 +113,31 @@ Auto-installed with `new-ds-project`. Ensures clean, validated, minimal commits.
 | **Python syntax** | Validates .py files |
 | **Flake8** | Warns on remaining lint issues |
 
+**commit-msg (validates commit message):**
+
+| Check | Action |
+|-------|--------|
+| **Conventional Commits** | Blocks non-compliant commit messages |
+| **Subject length** | Warns if >72 characters |
+| **Trailing period** | Warns if subject ends with `.` |
+
+Format: `<type>[scope]: <description>`
+
+Valid types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+Examples:
+```
+feat: add user authentication
+fix(api): resolve null pointer exception
+docs: update README
+feat!: breaking change to API
+```
+
 **pre-push (validates before push):**
 
 | Check | Action |
 |-------|--------|
+| **Commit messages** | Blocks if any commit doesn't follow Conventional Commits |
 | **Pytest** | Runs tests, blocks if failing |
 | **Branch** | Warns when pushing to main/master |
 

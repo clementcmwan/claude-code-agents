@@ -12,13 +12,16 @@ fi
 echo "Installing git hooks..."
 
 cp "$SCRIPT_DIR/pre-commit" .git/hooks/pre-commit
+cp "$SCRIPT_DIR/commit-msg" .git/hooks/commit-msg
 cp "$SCRIPT_DIR/pre-push" .git/hooks/pre-push
 
 chmod +x .git/hooks/pre-commit
+chmod +x .git/hooks/commit-msg
 chmod +x .git/hooks/pre-push
 
 echo "Installed:"
 echo "  - pre-commit (formatting, linting, secrets, debug statements)"
-echo "  - pre-push (tests)"
+echo "  - commit-msg (Conventional Commits validation)"
+echo "  - pre-push (commit message validation, tests)"
 echo ""
 echo "Done!"
