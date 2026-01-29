@@ -1,7 +1,7 @@
 ---
 name: Main-Agent
 description: Primary coordinator for data science projects. Delegates to specialized subagents for planning, reviewing, testing, and logging. Use as the main entry point for complex tasks.
-model: sonnet
+model: opus
 tools:
   - Read
   - Write

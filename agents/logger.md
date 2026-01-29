@@ -1,7 +1,7 @@
 ---
 name: Logger
 description: Instrumentation agent for adding logging and MLflow experiment tracking to data science code. Full write access to add observability without breaking functionality.
-model: sonnet
+model: opus
 tools:
   - Read
   - Write

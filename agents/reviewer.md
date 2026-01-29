@@ -1,7 +1,7 @@
 ---
 name: Reviewer
 description: Static code analysis agent for data science projects. Reviews code quality, best practices, security, and performance. Read-only with bash for linting tools.
-model: sonnet
+model: opus
 tools:
   - Read
   - Glob

@@ -1,7 +1,7 @@
 ---
 name: Tester
 description: Runtime validation agent for data science projects. Executes code to verify it runs correctly, validates outputs, and monitors performance. Read-only for code but can execute via bash.
-model: sonnet
+model: opus
 tools:
   - Read
   - Glob

@@ -1,7 +1,7 @@
 ---
 name: Master-Planner
 description: Planning agent for understanding requirements and designing project approach. Read-only - does not write code. Use FIRST before any implementation.
-model: sonnet
+model: opus
 tools:
   - Read
   - Glob
