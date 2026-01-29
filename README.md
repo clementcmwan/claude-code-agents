@@ -54,11 +54,43 @@ project/
 - **Core**: numpy, pandas, scikit-learn, matplotlib, seaborn
 - **Jupyter**: jupyter, jupyterlab
 - **Tracking**: MLflow
-- **Dev**: pytest, black, flake8, ipdb
+- **Dev**: pytest, black, flake8, autoflake, ipdb
 
 ### Requirements
 
 - [Miniforge/Mamba](https://github.com/conda-forge/miniforge) installed
+
+## Git Hooks
+
+Git hooks are auto-installed with `new-ds-project`. They ensure clean, validated, minimal commits.
+
+### pre-commit (auto-fixes code)
+
+| Check | Action |
+|-------|--------|
+| **Black** | Auto-formats Python code |
+| **Autoflake** | Removes unused imports/variables |
+| **Diff size** | Warns if >500 lines changed |
+| **Debug statements** | Blocks `breakpoint()`, `pdb`, `ipdb` |
+| **Print statements** | Warns (suggests logging) |
+| **Secrets** | Blocks hardcoded passwords, API keys |
+| **Large files** | Blocks files >5MB |
+| **Python syntax** | Validates .py files |
+| **Flake8** | Warns on remaining lint issues |
+
+### pre-push (validates before push)
+
+| Check | Action |
+|-------|--------|
+| **Pytest** | Runs tests, blocks if failing |
+| **Branch** | Warns when pushing to main/master |
+
+### Install in Existing Project
+
+```bash
+cd your-project
+/path/to/claude-code-agents/hooks/install-hooks.sh
+```
 
 ## Installation
 
