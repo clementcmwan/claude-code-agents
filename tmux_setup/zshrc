@@ -37,6 +37,7 @@ alias dkr-stop-all-running-containers="docker stop $(docker ps -q)"
 
 # ---- Eza (better ls) -----
 alias ls="eza --icons=always"
+alias ll="eza -la --icons=always"
 
 # ---- Zoxide (better cd) ----
 eval "$(zoxide init zsh)"
