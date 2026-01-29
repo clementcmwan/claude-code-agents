@@ -33,6 +33,10 @@
   1. List files changed
   2. Summarize what changed and why (1-2 sentences)
   3. Ask: "Ready to commit?"
+- **Never push without permission.** Before any `git push`:
+  1. Show commits that will be pushed (local vs remote)
+  2. Summarize what's being pushed
+  3. Ask: "Ready to push?"
 - Write concise commit messages (50 chars title, imperative mood).
 - Never commit secrets, credentials, or .env files.
 - Prefer small, focused commits over large ones.
