@@ -76,6 +76,7 @@ This project uses a multi-agent workflow:
 - **Reviewer**: Static code analysis (read-only with bash)
 - **Tester**: Runtime validation (read-only with bash)
 - **Logger**: Add logging and MLflow tracking (full access)
+- **Writer**: Content writing using James Clear methodology (read/write)
 
 ### Typical Workflow
 ```
@@ -108,3 +109,4 @@ Result (validated, instrumented code)
 | **Logger** | Production code, experiments, debugging |
 | **Reviewer** | After implementation, before testing |
 | **Tester** | After review, to validate functionality |
+| **Writer** | Blog posts, documentation, content drafting/editing |
