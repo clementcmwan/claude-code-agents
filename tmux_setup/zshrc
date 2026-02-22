@@ -31,8 +31,8 @@ alias edit-zsh="nano ~/.zshrc"
 alias src-zsh="source ~/.zshrc"
 
 # docker aliases
-alias dkr-rm-exited-containers="docker rm $(docker ps -a -q -f status=exited)"
-alias dkr-stop-all-running-containers="docker stop $(docker ps -q)"
+alias dkr-rm-exited-containers='docker rm $(docker ps -a -q -f status=exited)'
+alias dkr-stop-all-running-containers='docker stop $(docker ps -q)'
 
 
 # ---- Eza (better ls) -----
@@ -52,7 +52,6 @@ source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
 
 # completion using arrow keys (based on history)
