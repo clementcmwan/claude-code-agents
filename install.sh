@@ -64,7 +64,26 @@ else
     echo -e "${GREEN}✓${NC} Agents linked to ~/.claude/agents"
 fi
 
-# 6. Check if ~/bin is in PATH
+# 6. Symlink commands
+echo "Setting up commands..."
+if [ -d ~/.claude/commands ] && [ ! -L ~/.claude/commands ]; then
+    echo -e "${YELLOW}Warning:${NC} ~/.claude/commands exists and is not a symlink"
+    echo "  Skipping commands symlink. Manually merge if needed."
+else
+    ln -sf "$SCRIPT_DIR/commands" ~/.claude/commands
+    echo -e "${GREEN}✓${NC} Commands linked to ~/.claude/commands"
+fi
+
+# 7. Symlink settings.local.json
+echo "Setting up settings.local.json..."
+if [ ! -f "$SCRIPT_DIR/settings.local.json" ]; then
+    echo '{"permissions": {"allow": []}}' > "$SCRIPT_DIR/settings.local.json"
+    echo -e "${GREEN}✓${NC} Created empty settings.local.json"
+fi
+ln -sf "$SCRIPT_DIR/settings.local.json" ~/.claude/settings.local.json
+echo -e "${GREEN}✓${NC} settings.local.json linked to ~/.claude/"
+
+# 8. Check if ~/bin is in PATH
 if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
     echo ""
     echo -e "${YELLOW}Note:${NC} ~/bin is not in your PATH"
@@ -75,7 +94,7 @@ if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
     echo "Then run: source ~/.zshrc"
 fi
 
-# 7. GitHub CLI (optional)
+# 9. GitHub CLI (optional)
 echo ""
 if ! command -v gh &> /dev/null; then
     echo -e "${YELLOW}Optional:${NC} GitHub CLI not installed"
@@ -92,9 +111,11 @@ echo "  Setup Complete!"
 echo "=================================="
 echo ""
 echo "Installed:"
-echo "  ~/bin/new-ds-project     → $SCRIPT_DIR/new-ds-project"
-echo "  ~/.claude/CLAUDE.md      → $SCRIPT_DIR/claude_global_rules/CLAUDE.md"
-echo "  ~/.claude/agents/        → $SCRIPT_DIR/agents/"
+echo "  ~/bin/new-ds-project          → $SCRIPT_DIR/new-ds-project"
+echo "  ~/.claude/CLAUDE.md           → $SCRIPT_DIR/claude_global_rules/CLAUDE.md"
+echo "  ~/.claude/agents/             → $SCRIPT_DIR/agents/"
+echo "  ~/.claude/commands/           → $SCRIPT_DIR/commands/"
+echo "  ~/.claude/settings.local.json → $SCRIPT_DIR/settings.local.json"
 echo ""
 echo "Usage:"
 echo "  new-ds-project my-project 3.11    # Create new DS project"
